@@ -16,29 +16,29 @@ const sampleTexts = [
   "Actions speak louder than words.",
 ];
 
-const TypingTest = () => {
-  const [text, setText] = useState('');
-  const [input, setInput] = useState('');
-  const [timer, setTimer] = useState(60);
-  const [isActive, setIsActive] = useState(false);
-  const [wpm, setWpm] = useState(0);
-  const [accuracy, setAccuracy] = useState(100);
-  const [chartData, setChartData] = useState([]);
-  const inputRef = useRef(null);
+const TypingTest: React.FC = () => {
+  const [text, setText] = useState<string>('');
+  const [input, setInput] = useState<string>('');
+  const [timer, setTimer] = useState<number>(60);
+  const [isActive, setIsActive] = useState<boolean>(false);
+  const [wpm, setWpm] = useState<number>(0);
+  const [accuracy, setAccuracy] = useState<number>(100);
+  const [chartData, setChartData] = useState<{ time: number; wpm: number; accuracy: number }[]>([]);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    let interval = null;
+    let interval: NodeJS.Timeout | null = null;
     if (isActive && timer > 0) {
       interval = setInterval(() => {
         setTimer((prevTimer) => prevTimer - 1);
         calculateStats();
       }, 1000);
     } else if (timer === 0) {
-      clearInterval(interval);
+      clearInterval(interval!);
       setIsActive(false);
       calculateFinalStats();
     }
-    return () => clearInterval(interval);
+    return () => clearInterval(interval!);
   }, [isActive, timer]);
 
   const startTest = () => {
@@ -49,10 +49,14 @@ const TypingTest = () => {
     setWpm(0);
     setAccuracy(100);
     setChartData([]);
-    inputRef.current.focus();
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
   };
 
   const calculateStats = () => {
+    if (60 - timer === 0) return; // Avoid division by zero
+    
     const words = input.trim().split(' ').length;
     const currentWpm = Math.round((words / (60 - timer)) * 60);
     setWpm(currentWpm);
@@ -72,7 +76,7 @@ const TypingTest = () => {
     let correctWords = 0;
 
     for (let i = 0; i < inputWords.length; i++) {
-      if (inputWords[i] === textWords[i]) {
+      if (textWords[i] && inputWords[i] === textWords[i]) {
         correctWords++;
       }
     }
@@ -89,7 +93,7 @@ const TypingTest = () => {
     setAccuracy(finalAccuracy);
   };
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!isActive && e.target.value.length === 1) {
       startTest();
     }
