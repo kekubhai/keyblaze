@@ -1,5 +1,6 @@
 import TypingTest from '@/components/TypingTest';
 import ThemeToggle from '@/components/ThemeToggle';
+import Component from '@/components/sign';
 
 export default function Home() {
   return (
@@ -11,6 +12,7 @@ export default function Home() {
       <main>
         <TypingTest />
       </main>
+      <Component/>
     </div>
   );
 }
